@@ -1,4 +1,4 @@
-module github.com/mattermost/mattermost-plugin-starter-template
+module github.com/EramanDevelop/mattermost-plugin-ovice
 
 go 1.16
 
