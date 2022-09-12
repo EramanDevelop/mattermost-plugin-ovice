@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"sync"
+	"crypto/subtle"
 
 	"github.com/pkg/errors"
 
@@ -91,6 +92,14 @@ func (p *Plugin) OnActivate() error {
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	secret := r.URL.Query().Get("secret")
+	config := p.getConfiguration()
+
+	if subtle.ConstantTimeCompare([]byte(config.WebhookSecret), []byte(secret)) == 0 {
+		http.Error(w, "Not authorized", http.StatusUnauthorized)
 		return
 	}
 
